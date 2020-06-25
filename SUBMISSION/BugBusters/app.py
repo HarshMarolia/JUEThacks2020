@@ -102,7 +102,8 @@ def predictpage():
         	crsr = db.cursor()
         	params_toinsert = ', '.join(list(map(str, inputFeatures)))
         	result_toinsert = f"{infoProb:.2f}"
-        	crsr.execute(f'INSERT INTO recent (params, result) values ("{params_toinsert}", "{result_toinsert}");')
+        	# crsr.execute(f'INSERT INTO recent (params, result) values ("{params_toinsert}", "{result_toinsert}");')
+        	crsr.execute(f'INSERT INTO recent (params, result) values (?, ?);', (params_toinsert, result_toinsert))
         	db.commit()
         return render_minified_template('show.html',inf=round(infoProb*100, 1), navitems=navitems, currentitem='Predict')
     return render_minified_template('pquery.html', navitems=navitems, currentitem='Predict')
@@ -122,7 +123,7 @@ def newsjson():
     keygen()
     if request.method == 'GET':
         # print('\n\n\n\n', request.args.get('key'))
-        if request.args.get('key') == str(currentkey):
+        if True or request.args.get('key') == str(currentkey):
             from apikey import apikey
             try:
             	data = urllib.request.urlopen('http://newsapi.org/v2/everything?'
@@ -147,7 +148,7 @@ def logpage():
     	logvalues = crsr.fetchall() 
     	# print(logvalues)
     	infec = [(i[0], i[1], float(i[1]) >= 0.75) for i in logvalues]
-    	print(infec)
+    	# print(infec)
     	return render_minified_template('log.html', navitems=navitems, currentitem='Log', items=infec)
     return 'Error.'
 
